@@ -3,823 +3,722 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Controle de Saída de Materiais</title>
+    <title>Estoque • Controle de Saída</title>
     
-    <!-- Bootstrap 5.3 -->
+    <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- FontAwesome para Ícones -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
     
     <style>
+        /* Paleta de Cores: Vermelho, Branco e Preto */
         :root {
-            --chat-bg: #ffffff;
-            --msg-bg: #ffffff;
-            --msg-border: #e5e5e5;
-            --primary: #dc2626;
-            --primary-dark: #b91c1c;
-            --black: #0a0a0a;
-            --dark-gray: #1a1a1a;
+            --bg-dark: #0a0a0a;
+            --bg-card: #141414;
+            --border-color: #2b2b2b;
+            --primary-red: #d90429;
+            --secondary-red: #ef233c;
+            --text-light: #ffffff;
+            --text-muted: #cccccc;
         }
-        
+
         body {
-            background: #0a0a0a;
+            background-color: var(--bg-dark);
+            color: var(--text-light);
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
             min-height: 100vh;
-            padding-bottom: 2rem;
-            color: #1a1a1a;
-        }
-        
-        .app-container {
-            max-width: 1200px;
-            margin: 1.5rem auto;
-        }
-        
-        .main-card {
-            border: 2px solid #dc2626;
-            border-radius: 1rem;
-            box-shadow: 0 0 0 1px #dc2626, 0 10px 40px rgba(220,38,38,0.3);
-            overflow: hidden;
-            background: white;
-        }
-        
-        .app-header {
-            background: #0a0a0a;
-            border-bottom: 3px solid #dc2626;
-            padding: 1.25rem 1.5rem;
-            color: white;
-        }
-        
-        .nav-tabs .nav-link {
-            border: none;
-            color: #6c757d;
-            font-weight: 600;
-            padding: 0.875rem 1.5rem;
-            border-radius: 0.5rem 0.5rem 0 0;
-            transition: all 0.2s;
-            text-transform: uppercase;
-            font-size: 0.875rem;
-            letter-spacing: 0.5px;
-        }
-        
-        .nav-tabs .nav-link:hover {
-            background: #fef2f2;
-            color: var(--primary);
-        }
-        
-        .nav-tabs .nav-link.active {
-            background: white;
-            color: var(--black);
-            border-bottom: 3px solid var(--primary);
-            font-weight: 700;
-        }
-        
-        /* Chat Timeline */
-        .chat-timeline {
-            height: 58vh;
-            min-height: 380px;
-            max-height: 650px;
-            overflow-y: auto;
-            background: var(--chat-bg);
-            padding: 1.25rem;
-            border-radius: 0.75rem;
-        }
-        
-        .chat-timeline::-webkit-scrollbar {
-            width: 6px;
-        }
-        
-        .chat-timeline::-webkit-scrollbar-thumb {
-            background: #ced4da;
-            border-radius: 3px;
-        }
-        
-        .message {
             display: flex;
-            gap: 0.75rem;
-            margin-bottom: 1rem;
-            animation: slideIn 0.3s ease;
+            flex-direction: column;
         }
-        
-        @keyframes slideIn {
+
+        /* Forçar todas as letras brancas */
+        body, p, span, div, label, small, h1, h2, h3, h4, h5, h6,
+        .text-muted, .text-secondary, .form-label,
+        .card-header, .card-body, .card-title,
+        .alert, .badge, code,
+        .nav-tabs .nav-link,
+        td, th, tr,
+        .modal-body, .modal-title,
+        .footer, .footer p, .footer small,
+        .toast-body,
+        .input-group-text {
+            color: #ffffff !important;
+        }
+
+        /* Manter vermelho apenas nos destaques intencionais */
+        .text-danger, .brand-icon,
+        .chat-body strong,
+        .table .fw-bold.text-danger {
+            color: var(--primary-red) !important;
+        }
+
+        /* Links de aba inativos ficam brancos com opacidade */
+        .nav-tabs .nav-link:not(.active) {
+            color: rgba(255, 255, 255, 0.7) !important;
+        }
+
+        .nav-tabs .nav-link.active {
+            color: #ffffff !important;
+        }
+
+        /* Navbar / Header */
+        .header-custom {
+            background: linear-gradient(135deg, #111111, #000000);
+            border-bottom: 3px solid var(--primary-red);
+            box-shadow: 0 4px 20px rgba(217, 4, 41, 0.15);
+        }
+
+        .brand-icon {
+            color: var(--primary-red);
+            text-shadow: 0 0 10px rgba(217, 4, 41, 0.4);
+        }
+
+        /* Nav Tabs Customizadas */
+        .nav-tabs {
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .nav-tabs .nav-link {
+            color: var(--text-muted);
+            border: none;
+            font-weight: 600;
+            padding: 12px 24px;
+            border-radius: 8px 8px 0 0;
+            transition: all 0.3s ease;
+        }
+
+        .nav-tabs .nav-link:hover {
+            color: var(--text-light);
+            background-color: rgba(217, 4, 41, 0.1);
+        }
+
+        .nav-tabs .nav-link.active {
+            color: var(--text-light);
+            background-color: var(--primary-red);
+            border: none;
+            box-shadow: 0 -4px 15px rgba(217, 4, 41, 0.3);
+        }
+
+        /* Cards */
+        .card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
+        }
+
+        .card-header {
+            border-bottom: 1px solid var(--border-color);
+            background-color: rgba(0, 0, 0, 0.2);
+        }
+
+        /* Formulários e Inputs */
+        .form-control, .form-control:focus {
+            background-color: #1a1a1a;
+            border: 1px solid #333;
+            color: var(--text-light);
+        }
+
+        .form-control:focus {
+            border-color: var(--primary-red);
+            box-shadow: 0 0 0 0.25rem rgba(217, 4, 41, 0.25);
+        }
+
+        /* Botões */
+        .btn-red {
+            background-color: var(--primary-red);
+            color: var(--text-light);
+            font-weight: 600;
+            border: none;
+            transition: all 0.3s ease;
+        }
+
+        .btn-red:hover {
+            background-color: var(--secondary-red);
+            color: var(--text-light);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 15px rgba(217, 4, 41, 0.4);
+        }
+
+        .btn-outline-red {
+            border: 1px solid var(--primary-red);
+            color: var(--primary-red);
+        }
+
+        .btn-outline-red:hover {
+            background-color: var(--primary-red);
+            color: var(--text-light);
+        }
+
+        /* Timeline (Chat Style) */
+        .timeline-container {
+            height: 480px;
+            overflow-y: auto;
+            padding: 1rem;
+            background-color: #0d0d0d;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+
+        /* Custom Scrollbar */
+        .timeline-container::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .timeline-container::-webkit-scrollbar-track {
+            background: #111;
+        }
+
+        .timeline-container::-webkit-scrollbar-thumb {
+            background: var(--primary-red);
+            border-radius: 4px;
+        }
+
+        .chat-bubble {
+            background: #1e1e1e;
+            border-left: 4px solid var(--primary-red);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 16px;
+            position: relative;
+            max-width: 90%;
+            animation: fadeIn 0.3s ease-out forwards;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
+
+        .chat-meta {
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.75) !important;
+            margin-bottom: 8px;
+        }
+
+        .chat-body strong {
+            color: var(--secondary-red) !important;
+        }
+
+        /* Tabela da Aba de Pesquisa */
+        .table {
+            color: var(--text-light);
+            border-color: var(--border-color);
+        }
+
+        .table-dark {
+            --bs-table-bg: #141414;
+            --bs-table-striped-bg: #1a1a1a;
+        }
+
+        /* Rodapé Fixo / Bottom */
+        .footer {
+            margin-top: auto;
+            background-color: #050505;
+            border-top: 1px solid #222;
+            padding: 15px 0;
+            color: #ffffff !important;
+            font-size: 0.9rem;
+        }
+
+        .dev-badge {
+            background-color: rgba(217, 4, 41, 0.15);
+            border: 1px solid var(--primary-red);
+            color: var(--text-light);
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-weight: bold;
+            display: inline-block;
+        }
+
+        /* Toasts customizados */
+        .toast-container {
+            z-index: 1060;
+        }
         
-        .message-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: #0a0a0a;
+        .toast {
+            background-color: #1a1a1a;
+            border-left: 4px solid var(--primary-red);
             color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 700;
-            font-size: 0.875rem;
-            flex-shrink: 0;
-            border: 2px solid #dc2626;
-            box-shadow: 0 2px 8px rgba(220,38,38,0.3);
-        }
-        
-        .message-bubble {
-            background: var(--msg-bg);
-            border: 2px solid #0a0a0a;
-            border-radius: 0.5rem;
-            border-top-left-radius: 0.125rem;
-            padding: 0.75rem 1rem;
-            max-width: 85%;
-            box-shadow: 3px 3px 0 #dc2626;
-        }
-        
-        .message-time {
-            font-size: 0.75rem;
-            color: #6c757d;
-            font-family: 'Courier New', monospace;
-            margin-bottom: 0.25rem;
-        }
-        
-        .message-content {
-            font-size: 0.95rem;
-            color: #212529;
-            line-height: 1.4;
-        }
-        
-        .message-content strong {
-            color: #dc2626;
-            font-weight: 700;
-        }
-        
-        .empty-state {
-            text-align: center;
-            padding: 3rem 1rem;
-            color: #6c757d;
-        }
-        
-        .empty-state i {
-            font-size: 3rem;
-            opacity: 0.3;
-            margin-bottom: 1rem;
-        }
-        
-        /* Input Area */
-        .input-area {
-            background: white;
-            border-top: 1px solid #e9ecef;
-            padding: 1rem 1.25rem;
-        }
-        
-        .format-hint {
-            font-size: 0.8125rem;
-            color: #6c757d;
-        }
-        
-        .format-hint code {
-            background: #f1f3f5;
-            color: #495057;
-            padding: 0.125rem 0.375rem;
-            border-radius: 0.25rem;
-            font-size: 0.8125rem;
-        }
-        
-        .preview-box {
-            background: #0a0a0a;
-            border: 2px solid #dc2626;
-            border-radius: 0.5rem;
-            padding: 0.625rem 0.875rem;
-            font-size: 0.875rem;
-            display: none;
-            color: white;
-        }
-        
-        .preview-box.show {
-            display: block;
-            animation: fadeIn 0.2s;
-        }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-        
-        /* Search Results */
-        .search-results {
-            height: 58vh;
-            min-height: 380px;
-            max-height: 650px;
-            overflow-y: auto;
-            padding-right: 0.5rem;
-        }
-        
-        .search-results::-webkit-scrollbar {
-            width: 6px;
-        }
-        
-        .search-results::-webkit-scrollbar-thumb {
-            background: #ced4da;
-            border-radius: 3px;
-        }
-        
-        .result-card {
-            border: 1px solid #e9ecef;
-            border-radius: 0.75rem;
-            padding: 1rem;
-            margin-bottom: 0.75rem;
-            background: white;
-            transition: all 0.2s;
-        }
-        
-        .result-card:hover {
-            border-color: #dc2626;
-            box-shadow: 4px 4px 0 #0a0a0a;
-            transform: translate(-1px, -1px);
-        }
-        
-        .result-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 0.5rem;
-        }
-        
-        .result-time {
-            font-size: 0.75rem;
-            color: #6c757d;
-            font-family: 'Courier New', monospace;
-            background: #f8f9fa;
-            padding: 0.125rem 0.5rem;
-            border-radius: 0.25rem;
-        }
-        
-        .result-content {
-            font-size: 0.9375rem;
-        }
-        
-        .badge-tecnico {
-            background: #0a0a0a;
-            color: white;
-            font-weight: 600;
-            border: 1px solid #0a0a0a;
-        }
-        
-        .badge-material {
-            background: #dc2626;
-            color: white;
-            font-weight: 600;
-            border: 1px solid #dc2626;
-        }
-        
-        .badge-cliente {
-            background: white;
-            color: #0a0a0a;
-            font-weight: 600;
-            border: 2px solid #0a0a0a;
-        }
-        
-        /* Mobile adjustments */
-        @media (max-width: 768px) {
-            .app-container {
-                margin: 0.5rem;
-            }
-            
-            .chat-timeline,
-            .search-results {
-                height: 55vh;
-                min-height: 320px;
-                padding: 1rem;
-            }
-            
-            .message-bubble {
-                max-width: 92%;
-            }
-            
-            .app-header {
-                padding: 1rem;
-            }
-            
-            .nav-tabs .nav-link {
-                padding: 0.75rem 1rem;
-                font-size: 0.9rem;
-            }
-        }
-        
-        @media (max-width: 576px) {
-            .message-avatar {
-                width: 36px;
-                height: 36px;
-                font-size: 0.8125rem;
-            }
-            
-            .input-area {
-                padding: 0.875rem;
-            }
         }
     </style>
 </head>
 <body>
-    <div class="container-fluid app-container">
-        <div class="card main-card">
-             <!-- Header -->
-             <div class="app-header">
-                 <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
-                     <div>
-                         <h1 class="h4 mb-0 fw-bold text-white">
-                             <i class="fas fa-boxes-stacked me-2" style="color: #dc2626;"></i>
-                             CONTROLE DE SAÍDA
-                         </h1>
-                         <small class="d-none d-sm-inline" style="color: #999;">Sistema de estoque em tempo real</small>
-                     </div>
-                     <div class="d-flex align-items-center gap-2">
-                         <span class="badge" style="background: #dc2626; color: white; border: 2px solid white; font-weight: 700;">
-                             <i class="fas fa-database me-1"></i>
-                             <span id="totalCount">0</span> REGISTROS
-                         </span>
-                         <button class="btn btn-sm" id="btnLimpar" title="Limpar histórico" style="background: white; color: #0a0a0a; border: 2px solid #dc2626; font-weight: 600;">
-                             <i class="fas fa-trash-alt"></i>
-                             <span class="d-none d-md-inline ms-1">LIMPAR</span>
-                         </button>
-                     </div>
-                 </div>
-             </div>
-            
-            <!-- Tabs -->
-            <div class="card-body p-0">
-                <ul class="nav nav-tabs px-3 pt-2" role="tablist">
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link active" id="tab-registro" data-bs-toggle="tab" data-bs-target="#pane-registro" type="button" role="tab">
-                            <i class="fas fa-comment-dots me-1"></i>
-                            <span class="d-none d-sm-inline">Registrar </span>Saída
-                        </button>
-                    </li>
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="tab-pesquisa" data-bs-toggle="tab" data-bs-target="#pane-pesquisa" type="button" role="tab">
-                            <i class="fas fa-magnifying-glass me-1"></i>
-                            <span class="d-none d-sm-inline">Pesquisar </span>Saídas
-                        </button>
-                    </li>
-                </ul>
-                
-                <div class="tab-content">
-                    <!-- ABA REGISTRAR -->
-                    <div class="tab-pane fade show active" id="pane-registro" role="tabpanel">
-                        <div class="p-3 p-md-4">
-                            <!-- Timeline -->
-                            <div class="chat-timeline mb-3" id="timeline">
-                                <div class="empty-state" id="emptyTimeline">
-                                    <i class="fas fa-comments"></i>
-                                    <p class="mb-1 fw-medium">Nenhuma saída registrada ainda</p>
-                                    <small>Digite abaixo para começar</small>
-                                </div>
-                            </div>
-                            
-                            <!-- Input -->
-                            <div class="input-area rounded-3">
-                             <div class="preview-box mb-2" id="preview">
-                                     <i class="fas fa-eye me-1" style="color: #dc2626;"></i>
-                                     <span id="previewText"></span>
-                                 </div>
-                                
-                                 <div class="input-group">
-                                     <span class="input-group-text" style="background: #0a0a0a; border: 2px solid #0a0a0a; border-right: none;">
-                                         <i class="fas fa-paper-plane" style="color: #dc2626;"></i>
-                                     </span>
-                                     <input type="text" 
-                                            class="form-control form-control-lg" 
-                                            id="inputSaida" 
-                                            placeholder="Digite: Igor, Parafuso, Casa do João"
-                                            autocomplete="off"
-                                            style="border: 2px solid #0a0a0a; border-left: none; border-right: none;">
-                                     <button class="btn px-4" type="button" id="btnEnviar" style="background: #dc2626; color: white; border: 2px solid #0a0a0a; font-weight: 700; text-transform: uppercase;">
-                                         <i class="fas fa-paper-plane me-1 d-none d-sm-inline"></i>
-                                         Enviar
-                                     </button>
-                                 </div>
-                                
-                                <div class="format-hint mt-2 d-flex flex-wrap gap-2 gap-md-3">
-                                    <span><i class="fas fa-lightbulb text-warning me-1"></i>Formatos:</span>
-                                    <code>Igor, Parafuso, Casa do João</code>
-                                    <code class="d-none d-md-inline">Igor | motor | Alliance</code>
-                                    <code class="d-none d-lg-inline">técnico: Igor | material: x | cliente: y</code>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+
+    <!-- Cabeçalho Principal -->
+    <header class="header-custom py-3">
+        <div class="container d-flex align-items-center justify-content-between">
+            <div class="d-flex align-items-center gap-3">
+                <i class="fa-solid fa-boxes-packing fs-1 brand-icon"></i>
+                <div>
+                    <h1 class="h4 mb-0 fw-bold text-uppercase">Estoque <span class="text-danger">•</span> Controle de Saída</h1>
+                    <small class="text-white">Sistema inteligente de registros via texto</small>
+                </div>
+            </div>
+            <div>
+                <button class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#modalLimpar">
+                    <i class="fa-solid fa-trash-can me-1"></i> Limpar Histórico
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Conteúdo Principal -->
+    <main class="container my-4 flex-grow-1">
+        
+        <!-- Navegação em Abas (Tabs) -->
+        <ul class="nav nav-tabs mb-4" id="sistemaTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="registro-tab" data-bs-toggle="tab" data-bs-target="#registro" type="button" role="tab" aria-controls="registro" aria-selected="true">
+                    <i class="fa-solid fa-pen-to-square me-2"></i> Registrar Saída
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="pesquisa-tab" data-bs-toggle="tab" data-bs-target="#pesquisa" type="button" role="tab" aria-controls="pesquisa" aria-selected="false">
+                    <i class="fa-solid fa-magnifying-glass me-2"></i> Pesquisar Saídas
+                </button>
+            </li>
+        </ul>
+
+        <!-- Painel de Abas -->
+        <div class="tab-content" id="sistemaTabsContent">
+
+            <!-- ABA 1: REGISTRAR SAÍDA (CHAT) -->
+            <div class="tab-pane fade show active" id="registro" role="tabpanel" aria-labelledby="registro-tab">
+                <div class="row g-4">
                     
-                    <!-- ABA PESQUISAR -->
-                    <div class="tab-pane fade" id="pane-pesquisa" role="tabpanel">
-                        <div class="p-3 p-md-4">
-                            <div class="row g-3 mb-3">
-                                <div class="col-12 col-lg-8">
-                                    <div class="input-group input-group-lg">
-                                        <span class="input-group-text bg-white">
-                                            <i class="fas fa-search text-muted"></i>
-                                        </span>
-                                        <input type="text" 
-                                               class="form-control border-start-0" 
-                                               id="inputBusca" 
-                                               placeholder="Buscar por técnico ou cliente..."
-                                               autocomplete="off">
-                                        <button class="btn btn-outline-secondary" type="button" id="btnClearSearch" title="Limpar busca">
-                                            <i class="fas fa-xmark"></i>
-                                        </button>
+                    <!-- Painel Esquerdo: Instruções e Inserção -->
+                    <div class="col-lg-5">
+                        <div class="card h-100">
+                            <div class="card-header d-flex align-items-center justify-content-between">
+                                <h5 class="mb-0 fs-6 fw-bold"><i class="fa-solid fa-bolt me-2 text-danger"></i>Entrada Inteligente</h5>
+                                <button class="btn btn-sm btn-outline-light" onclick="preencherExemplo()">
+                                    <i class="fa-solid fa-wand-magic-sparkles me-1"></i> Exemplo
+                                </button>
+                            </div>
+                            <div class="card-body d-flex flex-column justify-content-between">
+                                <div class="mb-4">
+                                    <p class="text-muted small">
+                                        O sistema extrai os dados automaticamente. Basta usar vírgulas, hífens ou formato de palavras-chave:
+                                    </p>
+                                    
+                                    <div class="alert alert-dark border border-secondary p-2 small mb-3">
+                                        <div class="fw-bold text-white mb-1"><i class="fa-solid fa-check text-success me-2"></i>Formato simples com vírgulas:</div>
+                                        <code class="text-white">Igor, Parafuso 8mm, Casa do João</code>
+                                    </div>
+
+                                    <div class="alert alert-dark border border-secondary p-2 small mb-3">
+                                        <div class="fw-bold text-white mb-1"><i class="fa-solid fa-check text-success me-2"></i>Formato com palavras-chave/separador:</div>
+                                        <code class="text-white">tecnico: Ana - material: HD 1TB - cliente: Escola Central</code>
                                     </div>
                                 </div>
-                                <div class="col-12 col-lg-4 d-flex align-items-center">
-                                    <small class="text-muted">
-                                        <i class="fas fa-filter me-1"></i>
-                                        <span id="resultCount">0</span> resultado(s)
-                                    </small>
-                                </div>
+
+                                <!-- Formulário/Input do Usuário -->
+                                <form id="formRegistro" onsubmit="registrarSaida(event)">
+                                    <div class="mb-3">
+                                        <label for="inputEntrada" class="form-label fw-bold">Descrição da Saída:</label>
+                                        <textarea id="inputEntrada" class="form-control" rows="3" placeholder="Ex: Igor, Cabo HDMI 10m, Alliance House..." required autofocus></textarea>
+                                    </div>
+                                    <div class="d-grid">
+                                        <button type="submit" class="btn btn-red py-2">
+                                            <i class="fa-solid fa-paper-plane me-2"></i> Registrar Saída (Enter)
+                                        </button>
+                                    </div>
+                                </form>
                             </div>
-                            
-                            <div class="search-results" id="searchResults">
-                                <div class="empty-state">
-                                    <i class="fas fa-search"></i>
-                                    <p class="mb-1">Digite para filtrar os registros</p>
-                                    <small>Busca em tempo real por técnico ou cliente</small>
+                        </div>
+                    </div>
+
+                    <!-- Painel Direito: Timeline (Chat) -->
+                    <div class="col-lg-7">
+                        <div class="card h-100">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <h5 class="mb-0 fs-6 fw-bold"><i class="fa-solid fa-comments me-2 text-danger"></i>Linha do Tempo (Histórico)</h5>
+                                <span class="badge bg-danger" id="contadorRegistros">0 registros</span>
+                            </div>
+                            <div class="card-body p-0">
+                                <div class="timeline-container" id="timelineContainer">
+                                    <!-- Os balões de chat aparecem aqui dinamicamente -->
                                 </div>
                             </div>
                         </div>
                     </div>
+
+                </div>
+            </div>
+
+            <!-- ABA 2: PESQUISAR SAÍDAS -->
+            <div class="tab-pane fade" id="pesquisa" role="tabpanel" aria-labelledby="pesquisa-tab">
+                <div class="card">
+                    <div class="card-header py-3">
+                        <div class="row align-items-center">
+                            <div class="col-md-6">
+                                <h5 class="mb-0 fs-6 fw-bold"><i class="fa-solid fa-filter me-2 text-danger"></i>Buscar e Filtrar Saídas</h5>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="input-group">
+                                    <span class="input-group-text bg-dark border-secondary text-white">
+                                        <i class="fa-solid fa-magnifying-glass"></i>
+                                    </span>
+                                    <input type="text" id="campoBusca" class="form-control" placeholder="Buscar por técnico, material ou cliente..." onkeyup="filtrarResultados()">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-dark table-hover mb-0 align-middle">
+                                <thead>
+                                    <tr class="border-bottom border-danger">
+                                        <th class="py-3 px-4">Data / Hora</th>
+                                        <th class="py-3">Técnico</th>
+                                        <th class="py-3">Material Retirado</th>
+                                        <th class="py-3">Cliente / Destino</th>
+                                        <th class="py-3 text-end px-4">Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tabelaResultados">
+                                    <!-- Linhas populadas via JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Rodapé -->
+    <footer class="footer text-center">
+        <div class="container">
+            <div class="dev-badge mb-2">
+                <i class="fa-solid fa-code me-1"></i> Desenvolvimento por Igor Feliphe
+            </div>
+            <p class="mb-0 text-white small">© 2026 - Sistema de Controle de Saída de Materiais • Todos os direitos reservados.</p>
+        </div>
+    </footer>
+
+    <!-- Modal de Confirmação para Limpar Tudo -->
+    <div class="modal fade" id="modalLimpar" tabindex="-1" aria-labelledby="modalLimparLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content bg-dark text-white border border-danger">
+                <div class="modal-header border-bottom border-secondary">
+                    <h5 class="modal-title text-danger" id="modalLimparLabel">
+                        <i class="fa-solid fa-triangle-exclamation me-2"></i> Limpar todo o Histórico?
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                </div>
+                <div class="modal-body">
+                    Tem certeza de que deseja apagar permanentemente todas as saídas registradas? Esta ação não poderá ser desfeita.
+                </div>
+                <div class="modal-footer border-top border-secondary">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-danger" onclick="limparTudo()" data-bs-dismiss="modal">
+                        <i class="fa-solid fa-trash-can me-1"></i> Sim, Apagar Tudo
+                    </button>
                 </div>
             </div>
         </div>
-        
-         <div class="text-center mt-3">
-             <small style="color: #666;">
-                 <i class="fas fa-shield-alt me-1" style="color: #dc2626;"></i>
-                 Dados salvos localmente no navegador
-             </small>
-         </div>
     </div>
 
-    <!-- Toast container -->
-    <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1100">
-        <div id="toast" class="toast align-items-center text-white bg-success border-0" role="alert">
+    <!-- Toast Notification -->
+    <div class="toast-container position-fixed bottom-0 end-0 p-3">
+        <div id="toastAlerta" class="toast align-items-center border-0" role="alert" aria-live="assertive" aria-atomic="true">
             <div class="d-flex">
-                <div class="toast-body">
-                    <i class="fas fa-check-circle me-2"></i>
-                    <span id="toastMsg">Sucesso!</span>
+                <div class="toast-body" id="toastMensagem">
+                    Registro salvo com sucesso!
                 </div>
-                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
             </div>
         </div>
     </div>
 
+    <!-- Bootstrap 5 JS Bundle -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    
+
+    <!-- Script de Lógica / JS Puro -->
     <script>
-        // Estado da aplicação
+        // Chave para salvar no localStorage
+        const STORAGE_KEY = 'estoque_saidas_app';
+
+        // Array principal de dados
         let registros = [];
-        const STORAGE_KEY = 'controle_saida_materiais_v2';
-        
-        // Elementos DOM
-        const timeline = document.getElementById('timeline');
-        const emptyTimeline = document.getElementById('emptyTimeline');
-        const inputSaida = document.getElementById('inputSaida');
-        const btnEnviar = document.getElementById('btnEnviar');
-        const preview = document.getElementById('preview');
-        const previewText = document.getElementById('previewText');
-        const inputBusca = document.getElementById('inputBusca');
-        const btnClearSearch = document.getElementById('btnClearSearch');
-        const searchResults = document.getElementById('searchResults');
-        const totalCount = document.getElementById('totalCount');
-        const resultCount = document.getElementById('resultCount');
-        const btnLimpar = document.getElementById('btnLimpar');
-        const toastEl = document.getElementById('toast');
-        const toast = new bootstrap.Toast(toastEl, { delay: 3000 });
-        
-        // Inicialização
+
+        // Inicializar aplicação
         document.addEventListener('DOMContentLoaded', () => {
             carregarDados();
-            atualizarUI();
-            inputSaida.focus();
+
+            // Adicionar exemplos iniciais se estiver vazio
+            if (registros.length === 0) {
+                adicionarRegistro("15/04/2026 - 14:35", "Igor", "Motor PPA", "Alliance House");
+                adicionarRegistro("15/04/2026 - 14:40", "Ana", "Cabo HDMI", "Escola Primavera");
+            } else {
+                renderizarInterface();
+            }
+
+            // Atalho com ENTER no campo de texto
+            const input = document.getElementById('inputEntrada');
+            input.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    document.getElementById('formRegistro').requestSubmit();
+                }
+            });
         });
-        
-        // Carregar do localStorage
-        function carregarDados() {
-            const dados = localStorage.getItem(STORAGE_KEY);
-            if (dados) {
-                try {
-                    registros = JSON.parse(dados);
-                } catch (e) {
-                    registros = [];
+
+        // 1. Parser flexível para interpretar as mensagens de entrada
+        function analisarEntrada(texto) {
+            texto = texto.trim();
+
+            // Padrão 1: Separado por vírgula (ex: Igor, Parafuso 8mm, Casa do João)
+            if (texto.includes(',')) {
+                const partes = texto.split(',').map(p => p.trim()).filter(p => p.length > 0);
+                if (partes.length >= 3) {
+                    return {
+                        tecnico: partes[0],
+                        material: partes[1],
+                        cliente: partes.slice(2).join(', ') // Junta o restante caso o cliente tenha vírgula no nome
+                    };
                 }
             }
+
+            // Padrão 2: Separado por hífen ou pipe
+            if (texto.includes('-') || texto.includes('|')) {
+                const separador = texto.includes('|') ? '|' : '-';
+                const partes = texto.split(separador).map(p => p.trim()).filter(p => p.length > 0);
+                
+                // Se o usuário usou os rótulos (tecnico: ..., material: ...)
+                if (/tecnico|tec|material|mat|cliente|cli/i.test(texto)) {
+                    let tec = '', mat = '', cli = '';
+
+                    partes.forEach(parte => {
+                        const sub = parte.split(':');
+                        if (sub.length >= 2) {
+                            const chave = sub[0].toLowerCase().trim();
+                            const valor = sub.slice(1).join(':').trim();
+
+                            if (chave.includes('tec')) tec = valor;
+                            else if (chave.includes('mat')) mat = valor;
+                            else if (chave.includes('cli')) cli = valor;
+                        }
+                    });
+
+                    if (tec && mat && cli) {
+                        return { tecnico: tec, material: mat, cliente: cli };
+                    }
+                }
+
+                // Se separou por - mas sem rótulo (ex: Igor - Motor PPA - Alliance House)
+                if (partes.length >= 3) {
+                    return {
+                        tecnico: partes[0],
+                        material: partes[1],
+                        cliente: partes.slice(2).join(' - ')
+                    };
+                }
+            }
+
+            // Padrão 3: Tentativa de extração por palavras-chave com qualquer caractere no meio
+            const regexChaves = /(?:t[eé]cnico|tec)[\s:=]+(.*?)(?:[\s,-]*\|?[\s,-]*)(?:material|mat)[\s:=]+(.*?)(?:[\s,-]*\|?[\s,-]*)(?:cliente|cli)[\s:=]+(.*)/i;
+            const match = texto.match(regexChaves);
+            if (match && match.length === 4) {
+                return {
+                    tecnico: match[1].trim(),
+                    material: match[2].trim(),
+                    cliente: match[3].trim()
+                };
+            }
+
+            return null; // Não conseguiu interpretar
         }
-        
-        // Salvar no localStorage
+
+        // 2. Registrar e Salvar Entrada
+        function registrarSaida(event) {
+            event.preventDefault();
+            const input = document.getElementById('inputEntrada');
+            const texto = input.value;
+
+            if (!texto) return;
+
+            const extraido = analisarEntrada(texto);
+
+            if (!extraido || !extraido.tecnico || !extraido.material || !extraido.cliente) {
+                mostrarAlertaToast("❌ Formato não reconhecido! Tente: 'Técnico, Material, Cliente'", true);
+                return;
+            }
+
+            const agora = new Date();
+            const dataStr = `${agora.toLocaleDateString('pt-BR')} - ${agora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}`;
+
+            adicionarRegistro(dataStr, extraido.tecnico, extraido.material, extraido.cliente);
+
+            // Limpa o campo e foca de novo
+            input.value = '';
+            input.focus();
+
+            mostrarAlertaToast("✅ Saída registrada com sucesso!");
+        }
+
+        // Adiciona registro e atualiza DOM/Armazenamento
+        function adicionarRegistro(dataHora, tecnico, material, cliente) {
+            const novo = {
+                id: Date.now() + Math.random().toString(36).substring(2, 9),
+                dataHora,
+                tecnico,
+                material,
+                cliente
+            };
+
+            registros.push(novo);
+            salvarDados();
+            renderizarInterface();
+        }
+
+        // 3. Renderização
+        function renderizarInterface() {
+            renderizarTimeline();
+            renderizarTabela();
+            document.getElementById('contadorRegistros').innerText = `${registros.length} registros`;
+        }
+
+        // Renderiza Timeline de Chat
+        function renderizarTimeline() {
+            const container = document.getElementById('timelineContainer');
+            container.innerHTML = '';
+
+            if (registros.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center text-white mt-5" style="opacity:0.7">
+                        <i class="fa-solid fa-box-open fs-2 mb-2"></i>
+                        <p>Nenhuma saída registrada. Comece digitando abaixo.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            registros.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'chat-bubble';
+                div.innerHTML = `
+                    <div class="chat-meta d-flex justify-content-between">
+                        <span><i class="fa-regular fa-clock me-1"></i> ${item.dataHora}</span>
+                        <button class="btn btn-sm text-danger p-0 border-0" onclick="excluirRegistro('${item.id}')" title="Excluir">
+                            <i class="fa-solid fa-trash-can"></i>
+                        </button>
+                    </div>
+                    <div class="chat-body">
+                        <span class="fs-5 text-white"><strong>${item.tecnico}</strong> → ${item.material}</span>
+                        <div class="text-white mt-1 small">
+                            <i class="fa-solid fa-location-dot me-1 text-danger"></i> Cliente: <span class="text-white fw-semibold">${item.cliente}</span>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+
+            // Rolagem automática para o final do chat
+            container.scrollTop = container.scrollHeight;
+        }
+
+        // Renderiza Tabela e Filtra
+        function renderizarTabela(filtro = '') {
+            const tbody = document.getElementById('tabelaResultados');
+            tbody.innerHTML = '';
+
+            const termo = filtro.toLowerCase().trim();
+
+            const filtrados = registros.filter(item => 
+                item.tecnico.toLowerCase().includes(termo) ||
+                item.cliente.toLowerCase().includes(termo) ||
+                item.material.toLowerCase().includes(termo)
+            );
+
+            if (filtrados.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="5" class="text-center py-4 text-white" style="opacity:0.7">
+                            <i class="fa-solid fa-circle-exclamation me-1"></i> Nenhum registro encontrado.
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            filtrados.forEach(item => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td class="px-4 text-nowrap"><small class="text-white">${item.dataHora}</small></td>
+                    <td class="fw-bold text-danger">${item.tecnico}</td>
+                    <td>${item.material}</td>
+                    <td>${item.cliente}</td>
+                    <td class="text-end px-4">
+                        <button class="btn btn-sm btn-outline-danger" onclick="excluirRegistro('${item.id}')" title="Remover">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // Função do campo de busca / Filtro
+        function filtrarResultados() {
+            const valor = document.getElementById('campoBusca').value;
+            renderizarTabela(valor);
+        }
+
+        // 4. Exclusão e Limpeza
+        function excluirRegistro(id) {
+            registros = registros.filter(r => r.id !== id);
+            salvarDados();
+            renderizarInterface();
+            mostrarAlertaToast("🗑️ Registro removido com sucesso!");
+        }
+
+        function limparTudo() {
+            registros = [];
+            salvarDados();
+            renderizarInterface();
+            mostrarAlertaToast("💥 Histórico apagado por completo!");
+        }
+
+        // 5. Exemplo Rápido
+        function preencherExemplo() {
+            const input = document.getElementById('inputEntrada');
+            const exemplos = [
+                "Igor, Motor PPA, Alliance House",
+                "Ana, 50m Cabo CFTV, Escola Municipal",
+                "João, Placa de Portão Eletrônico, Condomínio das Flores",
+                "Lucas, Câmera IP Full HD, Loja Central"
+            ];
+            const aleatorio = exemplos[Math.floor(Math.random() * exemplos.length)];
+            input.value = aleatorio;
+            input.focus();
+        }
+
+        // 6. Toasts e Persistência Local
         function salvarDados() {
             localStorage.setItem(STORAGE_KEY, JSON.stringify(registros));
         }
-        
-        // Parser inteligente
-        function parseEntrada(texto) {
-            const original = texto.trim();
-            if (!original) return null;
-            
-            let tecnico = '', material = '', cliente = '';
-            
-            // Tenta extrair com labels explícitos primeiro
-            const regexTecnico = /(?:t[eé]cnico|tecnico|tec)\s*[:\-]\s*([^|,;]+)/i;
-            const regexMaterial = /material\s*[:\-]\s*([^|,;]+)/i;
-            const regexCliente = /cliente\s*[:\-]\s*([^|,;]+)/i;
-            
-            const mTec = original.match(regexTecnico);
-            const mMat = original.match(regexMaterial);
-            const mCli = original.match(regexCliente);
-            
-            if (mTec || mMat || mCli) {
-                tecnico = mTec ? mTec[1].trim() : '';
-                material = mMat ? mMat[1].trim() : '';
-                cliente = mCli ? mCli[1].trim() : '';
-                
-                // Se faltou algo, tenta completar com partes sem label
-                if (!tecnico || !material || !cliente) {
-                    let resto = original
-                        .replace(regexTecnico, '')
-                        .replace(regexMaterial, '')
-                        .replace(regexCliente, '')
-                        .replace(/[|,;]/g, ' ')
-                        .trim();
-                    
-                    const partes = resto.split(/\s+/).filter(p => p);
-                    if (!tecnico && partes[0]) tecnico = partes.shift();
-                    if (!material && partes[0]) material = partes.shift();
-                    if (!cliente && partes.length) cliente = partes.join(' ');
-                }
-            } else {
-                // Parser posicional: "Igor, Parafuso, Casa do João"
-                // Divide por vírgula, pipe, ou ponto-e-vírgula
-                let partes = original.split(/[,|;]/).map(p => p.trim()).filter(p => p);
-                
-                // Se não achou separador, tenta dividir por " - " (com espaços)
-                if (partes.length === 1 && original.includes(' - ')) {
-                    partes = original.split(/\s+-\s+/).map(p => p.trim()).filter(p => p);
-                }
-                
-                // Se ainda é 1 parte, tenta por múltiplos espaços
-                if (partes.length === 1) {
-                    const palavras = original.split(/\s{2,}/).map(p => p.trim()).filter(p => p);
-                    if (palavras.length >= 2) partes = palavras;
-                }
-                
-                if (partes.length >= 2) {
-                    tecnico = partes[0];
-                    material = partes[1];
-                    cliente = partes.slice(2).join(', ') || partes[2] || '';
-                    
-                    // Se cliente vazio mas temos só 2 partes, tenta dividir material
-                    if (!cliente && partes.length === 2 && partes[1].includes(' ')) {
-                        const subpartes = partes[1].split(/\s+/);
-                        if (subpartes.length >= 2) {
-                            material = subpartes[0];
-                            cliente = subpartes.slice(1).join(' ');
-                        }
-                    }
-                }
+
+        function carregarDados() {
+            const salvos = localStorage.getItem(STORAGE_KEY);
+            if (salvos) {
+                registros = JSON.parse(salvos);
             }
-            
-            // Limpeza final
-            tecnico = tecnico.replace(/^[:\-,\s]+|[:\-,\s]+$/g, '').trim();
-            material = material.replace(/^[:\-,\s]+|[:\-,\s]+$/g, '').trim();
-            cliente = cliente.replace(/^[:\-,\s]+|[:\-,\s]+$/g, '').trim();
-            
-            if (tecnico && material && cliente) {
-                return { tecnico, material, cliente };
-            }
-            
-            return null;
         }
-        
-        // Formatar data/hora
-        function formatarDataHora(data) {
-            const d = new Date(data);
-            const hh = String(d.getHours()).padStart(2, '0');
-            const mm = String(d.getMinutes()).padStart(2, '0');
-            const ss = String(d.getSeconds()).padStart(2, '0');
-            const dd = String(d.getDate()).padStart(2, '0');
-            const MM = String(d.getMonth() + 1).padStart(2, '0');
-            return `${hh}:${mm}:${ss} - ${dd}/${MM}`;
-        }
-        
-        // Obter iniciais
-        function getIniciais(nome) {
-            return nome.split(/\s+/)
-                .map(p => p[0])
-                .join('')
-                .substring(0, 2)
-                .toUpperCase();
-        }
-        
-        // Adicionar registro
-        function adicionarRegistro(tecnico, material, cliente) {
-            const registro = {
-                id: Date.now() + Math.random().toString(36).substr(2, 5),
-                dataHora: new Date().toISOString(),
-                tecnico: tecnico.trim(),
-                material: material.trim(),
-                cliente: cliente.trim()
-            };
+
+        function mostrarAlertaToast(mensagem, isErro = false) {
+            const toastEl = document.getElementById('toastAlerta');
+            const msgEl = document.getElementById('toastMensagem');
             
-            registros.unshift(registro);
-            salvarDados();
-            atualizarUI();
-            
-            // Feedback
-            mostrarToast(`Saída registrada: ${tecnico} - ${material}`, 'success');
-            
-            // Limpar input
-            inputSaida.value = '';
-            preview.classList.remove('show');
-            inputSaida.focus();
-        }
-        
-        // Atualizar interface
-        function atualizarUI() {
-            totalCount.textContent = registros.length;
-            renderizarTimeline();
-            filtrarBusca();
-        }
-        
-        // Renderizar timeline (chat)
-        function renderizarTimeline() {
-            if (registros.length === 0) {
-                timeline.innerHTML = `
-                    <div class="empty-state" id="emptyTimeline">
-                        <i class="fas fa-comments"></i>
-                        <p class="mb-1 fw-medium">Nenhuma saída registrada ainda</p>
-                        <small>Digite abaixo para começar</small>
-                    </div>
-                `;
-                return;
-            }
-            
-            timeline.innerHTML = registros.map(reg => {
-                const iniciais = getIniciais(reg.tecnico);
-                const dataFmt = formatarDataHora(reg.dataHora);
-                
-                return `
-                    <div class="message">
-                        <div class="message-avatar" title="${reg.tecnico}">
-                            ${iniciais}
-                        </div>
-                        <div class="message-bubble">
-                            <div class="message-time">[${dataFmt}]</div>
-                            <div class="message-content">
-                                <strong>${reg.tecnico}</strong> - ${reg.material} - ${reg.cliente}
-                            </div>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-            
-            // Scroll para o topo (mais recente)
-            timeline.scrollTop = 0;
-        }
-        
-        // Filtrar busca
-        function filtrarBusca() {
-            const termo = inputBusca.value.toLowerCase().trim();
-            
-            let filtrados = registros;
-            if (termo) {
-                filtrados = registros.filter(r => 
-                    r.tecnico.toLowerCase().includes(termo) ||
-                    r.cliente.toLowerCase().includes(termo) ||
-                    r.material.toLowerCase().includes(termo)
-                );
-            }
-            
-            resultCount.textContent = filtrados.length;
-            
-            if (filtrados.length === 0) {
-                searchResults.innerHTML = `
-                    <div class="empty-state">
-                        <i class="fas fa-search"></i>
-                        <p class="mb-1">${termo ? 'Nenhum resultado encontrado' : 'Nenhum registro'}</p>
-                        <small>${termo ? 'Tente outro termo' : 'Registre uma saída primeiro'}</small>
-                    </div>
-                `;
-                return;
-            }
-            
-            searchResults.innerHTML = filtrados.map(reg => {
-                const dataFmt = formatarDataHora(reg.dataHora);
-                const dataFull = new Date(reg.dataHora).toLocaleString('pt-BR');
-                
-                return `
-                    <div class="result-card">
-                        <div class="result-header">
-                            <div class="d-flex gap-1 flex-wrap">
-                                <span class="badge badge-tecnico">
-                                    <i class="fas fa-user-gear me-1"></i>${reg.tecnico}
-                                </span>
-                                <span class="badge badge-material">
-                                    <i class="fas fa-cube me-1"></i>${reg.material}
-                                </span>
-                            </div>
-                            <span class="result-time" title="${dataFull}">${dataFmt}</span>
-                        </div>
-                        <div class="result-content">
-                            <i class="fas fa-building text-muted me-1"></i>
-                            <strong>Cliente:</strong> ${reg.cliente}
-                        </div>
-                    </div>
-                `;
-            }).join('');
-        }
-        
-        // Mostrar toast
-        function mostrarToast(mensagem, tipo = 'success') {
-            const toastMsg = document.getElementById('toastMsg');
-            toastMsg.textContent = mensagem;
-            
-            toastEl.className = `toast align-items-center text-white border-0 bg-${tipo}`;
+            msgEl.innerText = mensagem;
+            toastEl.style.borderLeftColor = isErro ? '#ffc107' : 'var(--primary-red)';
+
+            const toast = new bootstrap.Toast(toastEl, { delay: 3000 });
             toast.show();
-        }
-        
-        // Event Listeners
-        btnEnviar.addEventListener('click', () => {
-            const texto = inputSaida.value.trim();
-            if (!texto) {
-                inputSaida.focus();
-                return;
-            }
-            
-            const parsed = parseEntrada(texto);
-            if (!parsed) {
-                mostrarToast('Formato inválido. Use: Técnico, Material, Cliente', 'danger');
-                inputSaida.select();
-                return;
-            }
-            
-            adicionarRegistro(parsed.tecnico, parsed.material, parsed.cliente);
-        });
-        
-        inputSaida.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') {
-                e.preventDefault();
-                btnEnviar.click();
-            }
-        });
-        
-        inputSaida.addEventListener('input', () => {
-            const texto = inputSaida.value.trim();
-            if (texto.length < 3) {
-                preview.classList.remove('show');
-                return;
-            }
-            
-            const parsed = parseEntrada(texto);
-            if (parsed) {
-                previewText.innerHTML = `
-                    <strong>Técnico:</strong> ${parsed.tecnico} • 
-                    <strong>Material:</strong> ${parsed.material} • 
-                    <strong>Cliente:</strong> ${parsed.cliente}
-                `;
-                preview.classList.add('show');
-            } else {
-                preview.classList.remove('show');
-            }
-        });
-        
-        inputBusca.addEventListener('input', filtrarBusca);
-        
-        btnClearSearch.addEventListener('click', () => {
-            inputBusca.value = '';
-            filtrarBusca();
-            inputBusca.focus();
-        });
-        
-        btnLimpar.addEventListener('click', () => {
-            if (registros.length === 0) {
-                mostrarToast('Nenhum registro para limpar', 'warning');
-                return;
-            }
-            
-            if (confirm(`Tem certeza que deseja apagar todos os ${registros.length} registros?\n\nEsta ação não pode ser desfeita.`)) {
-                registros = [];
-                salvarDados();
-                atualizarUI();
-                mostrarToast('Histórico limpo com sucesso', 'success');
-            }
-        });
-        
-        // Atalho: Ctrl+K para focar busca
-        document.addEventListener('keydown', (e) => {
-            if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
-                e.preventDefault();
-                const tabPesquisa = new bootstrap.Tab(document.getElementById('tab-pesquisa'));
-                tabPesquisa.show();
-                setTimeout(() => inputBusca.focus(), 150);
-            }
-        });
-        
-        // Demo inicial (apenas se vazio)
-        if (registros.length === 0) {
-            setTimeout(() => {
-                inputSaida.value = 'Igor, Parafuso, Casa do João';
-                inputSaida.dispatchEvent(new Event('input'));
-            }, 800);
         }
     </script>
 </body>
